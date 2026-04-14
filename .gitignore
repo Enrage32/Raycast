@@ -1,0 +1,18 @@
+# created file
+raycast.exe
+
+# compile objects
+*.o
+*.obj
+
+# temp
+*.pdb
+*.ilk
+*.idb
+
+# system files
+.DS_Store
+desktop.ini
+
+# vscode settings
+.vscode/
