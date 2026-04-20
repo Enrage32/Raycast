@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define PI 3.1415926535
+
 #define PI2 PI/2
 #define PI3 3*PI/2
 #define DR 0.0174532925 // one degree in radians
@@ -11,6 +11,7 @@
 float playerX, playerY, playerDeltaX, playerDeltaY, playerAngle; //player Angel of our players view, delta to calculate a movement
 
 int mapX = 8, mapY = 8, mapS=64;
+
 
 int map[]=
 {
@@ -47,7 +48,7 @@ void drawMap2D() {
 
 void init() {
     InitWindow(1024, 512, "RayCast");
-    SetTargetFPS(60);
+    SetTargetFPS(60); // todo: check delta
 
     playerX = 300, playerY = 300; playerDeltaX=cos(playerAngle); playerDeltaY = sin(playerAngle); //player position
 }
@@ -85,7 +86,7 @@ void drawRays3D() {
     for (r = 0; r < 60; r++) {
         // Horizontall check
         depthOfField = 0;
-        float distanceH = 1000000; // closest wall checker
+        float distanceH = 100000; // closest wall checker
         float horizHitX = playerX, horizHitY = playerY;
         float Ncotangent = -1 / tan(rayAngle);
 
@@ -128,8 +129,7 @@ void drawRays3D() {
                 depthOfField += 1;
             }
         }
-        // Drowing the line from the center of our player for the hit
-        // DrawLineEx((Vector2){px + 4, py + 4}, (Vector2){rx, ry}, 2.0f, RED);
+
 
 
     //vertical
@@ -138,16 +138,16 @@ void drawRays3D() {
     float vertHitX = playerX, vertHitY = playerY;
     float NTangent = -tan(rayAngle);
 
-    // Смотрим ВЛЕВО
+    // looking left
     if (rayAngle > PI2 && rayAngle < PI3) {
-        rayX = (((int)playerX >> 6) << 6) - 0.0001f;
+        rayX = (((int)playerX / 64) * 64) - 0.0001f;
         rayY = (playerX - rayX) * NTangent + playerY;
         xOffset = -64;
         yOffset = -xOffset * NTangent;
     }
-    // Смотрим ВПРАВО
+    // Looking right
     else if (rayAngle < PI2 || rayAngle > PI3) {
-        rayX = (((int)playerX >> 6) << 6) + 64;
+        rayX = (((int)playerX / 64) * 64) + 64;
         rayY = (playerX - rayX) * NTangent + playerY;
         xOffset = 64;
         yOffset = -xOffset * NTangent;
@@ -159,8 +159,8 @@ void drawRays3D() {
     }
 
     while (depthOfField < 8) {
-        targetColumn = (int)(rayX) >> 6;
-        targetRow = (int)(rayY) >> 6;
+        targetColumn = (int)(rayX) / 64;
+        targetRow = (int)(rayY) / 64;
         cellIndex = targetRow * mapX + targetColumn;
 
         if (cellIndex >= 0 && cellIndex < mapX * mapY && map[cellIndex] > 0) {
